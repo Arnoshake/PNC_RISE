@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import budget, cards, settings
+from app.routers import budget, cards, rewards, settings
 
 app = FastAPI(
     title="PNC Rise API",
@@ -19,6 +19,7 @@ app.add_middleware(
 
 app.include_router(budget.router, prefix="/api/budget", tags=["budget"])
 app.include_router(cards.router, prefix="/api/cards", tags=["cards"])
+app.include_router(rewards.router, prefix="/api/rewards", tags=["rewards"])
 app.include_router(settings.router, prefix="/api/settings", tags=["settings"])
 
 
