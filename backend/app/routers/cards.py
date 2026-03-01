@@ -1,8 +1,11 @@
+import json
 from collections import Counter
 from decimal import Decimal
 
 from fastapi import APIRouter, HTTPException
+from openai import AsyncOpenAI
 
+from app.config import OPENAI_API_KEY
 from app.models.card import Card
 from app.schemas import (
     CardAnalytics,
@@ -71,6 +74,70 @@ CARDS_STORE: dict[int, DebitCreditCard] = {
 CATEGORY_SPENDING_THRESHOLD = Decimal("100")  # alert when category spend exceeds this
 SAVING_SUGGESTION_PCT = Decimal("0.15")  # suggest reducing by 15%
 POINT_MILESTONE = Decimal("1000")  # milestone to compare against
+
+# OpenAI response format: JSON array of {"type": "alert"|"tip", "message": "text", "impact_value": number}
+INSIGHT_SCHEMA_INSTRUCTION = (
+    'Return only a valid JSON array of exactly 3 objects. Each object must have: '
+    '"type" (string, one of "alert" or "tip"), "message" (string), "impact_value" (number). '
+    'Example: [{"type": "alert", "message": "You spent a lot on dining.", "impact_value": 25.5}]'
+)
+
+
+async def get_ai_insights(spending_list: list[Purchase]) -> list[Insight] | None:
+    """
+    Call OpenAI to generate 3 actionable insights from the card's spending list.
+    Returns None if API key is missing or the request fails (caller should fall back to static insights).
+    """
+    if not OPENAI_API_KEY or OPENAI_API_KEY.strip() == "PASTE_YOUR_KEY_HERE":
+        return None
+    purchases_json = json.dumps(
+        [p.model_dump(mode="json") for p in spending_list],
+        indent=2,
+    )
+    system_content = (
+        "You are a specialized financial assistant for college students. "
+        "Analyze the provided JSON list of card purchases and return 3 actionable, data-driven insights. "
+        + INSIGHT_SCHEMA_INSTRUCTION
+    )
+    try:
+        client = AsyncOpenAI(api_key=OPENAI_API_KEY)
+        response = await client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_content},
+                {"role": "user", "content": f"Card purchases (JSON):\n{purchases_json}"},
+            ],
+            temperature=0.3,
+        )
+        content = response.choices[0].message.content
+        if not content:
+            return None
+        # Strip markdown code fence if present
+        text = content.strip()
+        if text.startswith("```"):
+            lines = text.split("\n")
+            if lines[0].startswith("```"):
+                lines = lines[1:]
+            if lines and lines[-1].strip() == "```":
+                lines = lines[:-1]
+            text = "\n".join(lines)
+        raw = json.loads(text)
+        if not isinstance(raw, list) or len(raw) == 0:
+            return None
+        insights: list[Insight] = []
+        for item in raw[:3]:
+            if not isinstance(item, dict):
+                continue
+            t = item.get("type") or "tip"
+            msg = item.get("message") or ""
+            try:
+                impact = Decimal(str(item.get("impact_value", 0)))
+            except Exception:
+                impact = Decimal("0")
+            insights.append(Insight(type=t, message=msg, impact_value=impact))
+        return insights if insights else None
+    except Exception:
+        return None
 
 
 def _generate_insights(spending_list: list[Purchase], total_points: Decimal) -> list[Insight]:
@@ -173,12 +240,14 @@ def add_purchase(card_id: int, payload: PurchaseCreate):
 
 
 @router.get("/{card_id}/points", response_model=CardAnalytics)
-def get_card_points(card_id: int):
-    """Card analytics: total points/spend plus real-time insights from spending_list."""
+async def get_card_points(card_id: int):
+    """Card analytics: total points/spend plus AI or static insights from spending_list."""
     card = _get_card(card_id)
     total_spend = sum(p.cost for p in card.spending_list)
     total_points = total_spend * Points.value
-    insights = _generate_insights(card.spending_list, total_points)
+    insights = await get_ai_insights(card.spending_list)
+    if insights is None:
+        insights = _generate_insights(card.spending_list, total_points)
     return CardAnalytics(
         card_id=card_id,
         total_points=total_points,
