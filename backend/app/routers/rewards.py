@@ -6,12 +6,6 @@ from app.schemas import Reward
 
 router = APIRouter()
 
-
-@router.get("", response_model=list[Reward])
-def list_rewards():
-    """List all available rewards."""
-    return REWARDS_STORE
-
 # In-memory store for rewards - replace with real data source
 REWARDS_STORE: list[Reward] = [
     Reward(
@@ -30,3 +24,9 @@ REWARDS_STORE: list[Reward] = [
         point_cost=150,
     ),
 ]
+
+
+@router.get("", response_model=list[Reward])
+def list_rewards():
+    """List all available rewards."""
+    return REWARDS_STORE
