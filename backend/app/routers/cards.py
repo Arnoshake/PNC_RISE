@@ -7,7 +7,7 @@ router = APIRouter()
 # Mock data for A1 cards - replace with real data source
 MOCK_CARDS = [
     Card(
-        id="card-1",
+        id=1,
         title="Chase Sapphire",
         description="Primary spending: groceries, dining out",
         image_url="/cards/chase-sapphire.svg",
@@ -16,7 +16,7 @@ MOCK_CARDS = [
         ai_suggestions="Consider meal prepping to reduce dining out by 15%.",
     ),
     Card(
-        id="card-2",
+        id=2,
         title="Discover Cashback",
         description="Gas, utilities, subscriptions",
         image_url="/cards/discover.svg",
