@@ -5,12 +5,13 @@ from typing import Optional
 class Card(BaseModel):
     """User card with spending overview for A1 Cards page."""
 
-    id: str
+    id: int
     title: str
     description: str
     image_url: str
     main_spending_category: str
     total_spending: float
+    purchases: Optional[list] = None  # List of recent purchases for B1
     ai_suggestions: Optional[str] = None
 
 
