@@ -4,7 +4,6 @@ Used for request/response validation and API contract.
 """
 
 from decimal import Decimal
-from uuid import UUID
 
 from pydantic import BaseModel, Field
 
@@ -32,7 +31,7 @@ POINTS_PER_UNIT = Points.value
 class Purchase(BaseModel):
     """A single purchase on a card."""
 
-    id: UUID
+    id: int
     cost: Decimal
     vendor: str
     category: str
@@ -58,7 +57,7 @@ class PurchaseCreate(BaseModel):
 class DebitCreditCard(BaseModel):
     """Card with nested list of purchases."""
 
-    id: UUID
+    id: int
     name: str
     spending_list: list[Purchase] = Field(default_factory=list, alias="spending_list")
 
@@ -73,9 +72,35 @@ class DebitCreditCard(BaseModel):
 class Reward(BaseModel):
     """Redeemable reward with a point cost."""
 
-    id: UUID
+    id: int
     name: str
     point_cost: int
+
+
+# ---------------------------------------------------------------------------
+# Insights (dynamic AI analysis)
+# ---------------------------------------------------------------------------
+
+
+class Insight(BaseModel):
+    """A single data-driven insight (type, message, optional impact)."""
+
+    type: str
+    message: str
+    impact_value: Decimal
+
+    model_config = {"json_encoders": {Decimal: str}}
+
+
+class CardAnalytics(BaseModel):
+    """Card points summary plus real-time insights from spending_list analysis."""
+
+    card_id: int
+    total_points: Decimal
+    total_spend: Decimal
+    insights: list[Insight] = Field(default_factory=list)
+
+    model_config = {"json_encoders": {Decimal: str}}
 
 
 # ---------------------------------------------------------------------------
@@ -86,7 +111,7 @@ class Reward(BaseModel):
 class PointsSummary(BaseModel):
     """Total points for a card (sum of purchase costs × Points.value)."""
 
-    card_id: UUID
+    card_id: int
     total_points: Decimal
     total_spend: Decimal
 

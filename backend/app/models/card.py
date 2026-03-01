@@ -18,7 +18,7 @@ class Card(BaseModel):
 class CardSettings(BaseModel):
     """B2 Settings - round-up percentage per card."""
 
-    card_id: str
+    card_id: int
     round_up_percentage: float
     is_active: bool = True
 
