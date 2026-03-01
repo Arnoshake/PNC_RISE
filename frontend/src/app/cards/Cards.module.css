@@ -1,0 +1,100 @@
+.glassBudget {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 40, 85, 0.12);
+  padding: 24px;
+}
+
+.cardTile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  min-width: 260px;
+}
+
+.cardTile img {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+}
+
+.cardTile:hover img {
+  transform: scale(1.15) rotate(2deg);
+  filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.6)) !important;
+}
+
+.sectionHeader {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: #002855;
+  letter-spacing: -0.5px;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 10px;
+}
+
+.sectionHeader::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 48px;
+  height: 3px;
+  background: #F7941D;
+  border-radius: 2px;
+}
+
+.dailyQuestionsBtn {
+  background: linear-gradient(135deg, #F7941D 0%, #E8830A 100%);
+  border: none;
+  border-radius: 14px;
+  padding: 18px 32px;
+  font-size: 17px;
+  font-weight: 700;
+  color: white;
+  width: 100%;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(247, 148, 29, 0.35);
+  transition: all 0.3s ease;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+  font-family: 'Nunito Sans', sans-serif;
+}
+
+.dailyQuestionsBtn:hover {
+  box-shadow: 0 12px 32px rgba(247, 148, 29, 0.5);
+  transform: translateY(-2px);
+}
+
+.addCardTile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 260px;
+  min-height: 200px;
+  padding: 24px;
+  background: transparent;
+  border: 2px dashed rgba(247, 148, 29, 0.6);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.addCardTile:hover {
+  background: rgba(247, 148, 29, 0.15);
+  border-color: #F7941D;
+  border-style: solid;
+}

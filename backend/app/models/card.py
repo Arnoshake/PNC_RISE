@@ -1,17 +1,16 @@
 from pydantic import BaseModel
 from typing import Optional
 
+from app.models.purchase import Purchase
+
 
 class Card(BaseModel):
-    """User card with spending overview for A1 Cards page."""
+    """User card with spending list - matches DATA spec."""
 
     id: str
-    title: str
-    description: str
-    image_url: str
-    main_spending_category: str
-    total_spending: float
-    ai_suggestions: Optional[str] = None
+    name: str
+    spending_list: list[Purchase] = []
+    image_src: str = "/images/pnc.jpg"
 
 
 class CardSettings(BaseModel):

@@ -1,6 +1,6 @@
 # PNC Rise
 
-Financial literacy web app for young adults – understand how daily finances affect your future.
+Financial literacy web app for young adults – *planning your finances until the sunsets on your retirement*.
 
 ## Tech Stack
 
@@ -8,40 +8,23 @@ Financial literacy web app for young adults – understand how daily finances af
 - **Backend:** FastAPI (Python)
 - **Methodology:** MVC
 
-## Project Structure
+## Flow (per PDF + _bmad)
 
-```
-PNC_RISE/
-├── frontend/                 # Next.js 15 app
-│   └── src/
-│       ├── app/              # App router pages
-│       │   ├── page.tsx      # A1 Cards (home)
-│       │   ├── daily-questions/
-│       │   ├── settings/
-│       │   ├── rewards/
-│       │   ├── growth/
-│       │   ├── faq/
-│       │   └── profile/
-│       ├── components/
-│       │   └── Navigation/   # A–F nav menu
-│       └── lib/
-│           └── api.ts        # API client (matches backend Pydantic)
-├── backend/                  # FastAPI
-│   ├── app/
-│   │   ├── main.py
-│   │   ├── models/           # Pydantic models
-│   │   ├── schemas/
-│   │   └── routers/          # budget, cards, settings
-│   └── requirements.txt
-└── _bmad-output/
-    └── implementation-artifacts/
-        └── pnc-rise-api-spec.md
-```
+1. **Landing (/**) – Retirement Growth / Your Journey. Menu pop-out.
+2. **Cards** – Card data, spending list, points, pie chart, Daily Questions button.
+3. **Rewards** – Points, redeemable rewards.
+4. **Settings** – All card settings, slider (suggested amount based on user data).
+5. **FAQ** – Scroll feature, suggestions based on card & spending data.
+6. **Profile** – Saving settings, notification frequency, decision suggestions.
 
-## Design Tokens
+## Data Models
 
-- **River Bed (text):** `#424A56`
-- **Christine (accent/buttons):** `#ED6E09`
+| Model    | Fields                                      |
+|----------|---------------------------------------------|
+| Card     | id, name, spending_list                      |
+| Purchase | id, cost, vendor, category                   |
+| Points   | value (static)                              |
+| Reward   | id, name, points                             |
 
 ## Run Locally
 
@@ -50,7 +33,7 @@ PNC_RISE/
 ```bash
 cd backend
 python -m venv .venv
-source .venv/bin/activate   # or `.venv\Scripts\activate` on Windows
+source .venv/bin/activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
@@ -63,22 +46,24 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The Cards page (A1) is the default home.
+Open [http://localhost:3000](http://localhost:3000).
 
 ## API Endpoints
 
 | Endpoint | Description |
 |----------|-------------|
-| `GET /api/budget/breakdown` | A1 pie chart data |
-| `GET /api/cards` | A1 cards list |
-| `GET /api/settings/{card_id}` | B2 card round-up % |
-| `PUT /api/settings/{card_id}` | B2 update round-up % |
+| `GET /api/cards` | Cards with spending list |
+| `GET /api/points` | Points balance |
+| `GET /api/rewards` | Redeemable rewards |
+| `GET /api/budget/breakdown` | Pie chart data |
+| `GET /api/settings/{card_id}` | Card round-up % |
+| `PUT /api/settings/{card_id}` | Update round-up % |
 
-## Navigation (A–F)
+## Navigation
 
-- **A.** Cards / Home
-- **B.** Settings
-- **C.** Rewards
-- **D.** Retirement Growth
-- **E.** FAQ
-- **F.** Profile
+- ① Growth (landing)
+- A Cards
+- B Rewards
+- C Settings
+- E FAQ
+- F Profile

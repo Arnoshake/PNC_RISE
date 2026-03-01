@@ -1,33 +1,31 @@
 from fastapi import APIRouter
 
 from app.models.card import Card
+from app.models.purchase import Purchase
 
 router = APIRouter()
 
-# Mock data for A1 cards - replace with real data source
+# Dummy data - Card with Id, Name, Spending list (Purchases)
+MOCK_PURCHASES_CARD1 = [
+    Purchase(id="p1", cost=45.32, vendor="Whole Foods", category="grocery"),
+    Purchase(id="p2", cost=28.50, vendor="Chipotle", category="eating_out"),
+    Purchase(id="p3", cost=120.00, vendor="Netflix", category="entertainment"),
+    Purchase(id="p4", cost=65.00, vendor="Target", category="clothes_shoes"),
+]
+
+MOCK_PURCHASES_CARD2 = [
+    Purchase(id="p5", cost=52.00, vendor="Shell", category="transportation"),
+    Purchase(id="p6", cost=89.00, vendor="Duke Energy", category="utilities"),
+    Purchase(id="p7", cost=15.99, vendor="Spotify", category="entertainment"),
+]
+
 MOCK_CARDS = [
-    Card(
-        id="card-1",
-        title="Chase Sapphire",
-        description="Primary spending: groceries, dining out",
-        image_url="/cards/chase-sapphire.svg",
-        main_spending_category="eating_out",
-        total_spending=1250.0,
-        ai_suggestions="Consider meal prepping to reduce dining out by 15%.",
-    ),
-    Card(
-        id="card-2",
-        title="Discover Cashback",
-        description="Gas, utilities, subscriptions",
-        image_url="/cards/discover.svg",
-        main_spending_category="transportation",
-        total_spending=680.0,
-        ai_suggestions="Your gas spending is 12% below average. Keep it up!",
-    ),
+    Card(id="card-1", name="PNC Virtual Wallet", spending_list=MOCK_PURCHASES_CARD1, image_src="/images/PNCdebitcard.jpg"),
+    Card(id="card-3", name="Capital One Savor", spending_list=MOCK_PURCHASES_CARD2, image_src="/images/captialonesavor.jpg"),
 ]
 
 
 @router.get("", response_model=list[Card])
 def list_cards():
-    """Get user's cards for A1 Cards page."""
+    """Get user's cards with spending list."""
     return MOCK_CARDS
